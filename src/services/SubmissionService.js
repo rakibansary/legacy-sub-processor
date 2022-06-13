@@ -12,10 +12,30 @@ const LegacySubmissionIdService = require('legacy-processor-module/LegacySubmiss
 const eventSchema = Schema.createEventSchema({
   id: Joi.sid().required(),
   resource: Joi.resource(),
-  challengeId: Joi.id().required(),
-  memberId: Joi.id().required(),
-  submissionPhaseId: Joi.sid().required(),
-  type: Joi.string().required(),
+  challengeId: Joi.id().when("resource", {
+    is: Joi.string().valid("submission"),
+    then: Joi.required()
+  }),
+  memberId: Joi.id().when("resource", {
+    is: Joi.string().valid("submission"),
+    then: Joi.required()
+  }),
+  submissionPhaseId: Joi.sid().when("resource", {
+    is: Joi.string().valid("submission"),
+    then: Joi.required()
+  }),
+  type: Joi.string().when("resource", {
+    is: Joi.string().valid("submission"),
+    then: Joi.required()
+  }),
+  score: Joi.number().when("resource", {
+    is: Joi.string().valid("review"),
+    then: Joi.required()
+  }),
+  status: Joi.string().valid("completed").when("resource", {
+    is: Joi.string().valid("review"),
+    then: Joi.required(),
+  }),
   url: Joi.string()
     .uri()
     .optional(),
